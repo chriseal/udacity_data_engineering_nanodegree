@@ -51,7 +51,15 @@ get_ipython().run_line_magic('sql', '$conn_string')
 # In[3]:
 
 
-get_ipython().run_cell_magic('time', '', '%%sql\nSELECT d.day, m.rating, c.country, SUM(f.sales_amount) AS revenue\nFROM factsales f\n    JOIN dimdate d ON (d.date_key=f.date_key)\n    JOIN dimcustomer c ON (c.customer_key=f.customer_key)\n    JOIN dimmovie m ON (m.movie_key=f.movie_key)\nGROUP BY (d.day, m.rating, c.country)\nORDER BY revenue DESC\nLIMIT 5;')
+get_ipython().run_cell_magic('time', '', """%%sql
+SELECT d.day, m.rating, c.country, SUM(f.sales_amount) AS revenue
+FROM factsales f
+    JOIN dimdate d ON (d.date_key=f.date_key)
+    JOIN dimcustomer c ON (c.customer_key=f.customer_key)
+    JOIN dimmovie m ON (m.movie_key=f.movie_key)
+    GROUP BY (d.day, m.rating, c.country)
+ORDER BY revenue DESC
+LIMIT 5;""")
 
 
 # <div class="p-Widget jp-RenderedHTMLCommon jp-RenderedHTML jp-mod-trusted jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html"><table>
