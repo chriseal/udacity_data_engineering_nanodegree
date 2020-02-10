@@ -215,7 +215,77 @@ get_ipython().run_cell_magic('sql', '', 'SELECT f.title, ci.city,EXTRACT(month F
 # In[ ]:
 
 
-get_ipython().run_cell_magic('sql', '', 'CREATE TABLE dimDate\n(\n  date_key integer NOT NULL PRIMARY KEY,\n  date date NOT NULL,\n  year smallint NOT NULL,\n  quarter smallint NOT NULL,\n  month smallint NOT NULL,\n  day smallint NOT NULL,\n  week smallint NOT NULL,\n  is_weekend boolean\n);\n\nCREATE TABLE dimCustomer\n(\n  customer_key SERIAL PRIMARY KEY,\n  customer_id  smallint NOT NULL,\n  first_name   varchar(45) NOT NULL,\n  last_name    varchar(45) NOT NULL,\n  email        varchar(50),\n  address      varchar(50) NOT NULL,\n  address2     varchar(50),\n  district     varchar(20) NOT NULL,\n  city         varchar(50) NOT NULL,\n  country      varchar(50) NOT NULL,\n  postal_code  varchar(10),\n  phone        varchar(20) NOT NULL,\n  active       smallint NOT NULL,\n  create_date  timestamp NOT NULL,\n  start_date   date NOT NULL,\n  end_date     date NOT NULL\n);\n\nCREATE TABLE dimMovie\n(\n  movie_key          SERIAL PRIMARY KEY,\n  film_id            smallint NOT NULL,\n  title              varchar(255) NOT NULL,\n  description        text,\n  release_year       year,\n  language           varchar(20) NOT NULL,\n  original_language  varchar(20),\n  rental_duration    smallint NOT NULL,\n  length             smallint NOT NULL,\n  rating             varchar(5) NOT NULL,\n  special_features   varchar(60) NOT NULL\n);\nCREATE TABLE dimStore\n(\n  store_key           SERIAL PRIMARY KEY,\n  store_id            smallint NOT NULL,\n  address             varchar(50) NOT NULL,\n  address2            varchar(50),\n  district            varchar(20) NOT NULL,\n  city                varchar(50) NOT NULL,\n  country             varchar(50) NOT NULL,\n  postal_code         varchar(10),\n  manager_first_name  varchar(45) NOT NULL,\n  manager_last_name   varchar(45) NOT NULL,\n  start_date          date NOT NULL,\n  end_date            date NOT NULL\n);\nCREATE TABLE factSales\n(\n  sales_key        SERIAL PRIMARY KEY,\n  date_key         INT NOT NULL REFERENCES dimDate(date_key),\n  customer_key     INT NOT NULL REFERENCES dimCustomer(customer_key),\n  movie_key        INT NOT NULL REFERENCES dimMovie(movie_key),\n  store_key        INT NOT NULL REFERENCES dimStore(store_key),\n  sales_amount     decimal(5,2) NOT NULL\n);')
+get_ipython().run_cell_magic('sql', '', """
+CREATE TABLE dimDate
+(
+  date_key integer NOT NULL PRIMARY KEY,
+  date date NOT NULL,
+  year smallint NOT NULL,
+  quarter smallint NOT NULL,
+  month smallint NOT NULL,
+  day smallint NOT NULL,
+  week smallint NOT NULL,
+  is_weekend boolean
+);
+
+CREATE TABLE dimCustomer
+(
+  customer_key SERIAL PRIMARY KEY,
+  customer_id  smallint NOT NULL,
+  first_name   varchar(45) NOT NULL,
+  last_name    varchar(45) NOT NULL,
+  email        varchar(50),
+  address      varchar(50) NOT NULL,
+  address2     varchar(50),
+  district     varchar(20) NOT NULL,
+  city         varchar(50) NOT NULL,
+  country      varchar(50) NOT NULL,
+  postal_code  varchar(10),
+  phone        varchar(20) NOT NULL,
+  active       smallint NOT NULL,
+  create_date  timestamp NOT NULL,
+  start_date   date NOT NULL,
+  end_date     date NOT NULL
+);
+
+CREATE TABLE dimMovie
+(
+  movie_key          SERIAL PRIMARY KEY,
+  film_id            smallint NOT NULL,
+  title              varchar(255) NOT NULL,
+  description        text,
+  release_year       year,
+  language           varchar(20) NOT NULL,
+  original_language  varchar(20),
+  rental_duration    smallint NOT NULL,
+  length             smallint NOT NULL,
+  rating             varchar(5) NOT NULL,
+  special_features   varchar(60) NOT NULL
+);
+CREATE TABLE dimStore
+(
+  store_key           SERIAL PRIMARY KEY,
+  store_id            smallint NOT NULL,
+  address             varchar(50) NOT NULL,
+  address2            varchar(50),
+  district            varchar(20) NOT NULL,
+  city                varchar(50) NOT NULL,
+  country             varchar(50) NOT NULL,
+  postal_code         varchar(10),
+  manager_first_name  varchar(45) NOT NULL,
+  manager_last_name   varchar(45) NOT NULL,
+  start_date          date NOT NULL,
+  end_date            date NOT NULL
+);
+CREATE TABLE factSales
+(
+  sales_key        SERIAL PRIMARY KEY,
+  date_key         INT NOT NULL REFERENCES dimDate(date_key),
+  customer_key     INT NOT NULL REFERENCES dimCustomer(customer_key),
+  movie_key        INT NOT NULL REFERENCES dimMovie(movie_key),
+  store_key        INT NOT NULL REFERENCES dimStore(store_key),
+  sales_amount     decimal(5,2) NOT NULL\n);
+""")
 
 
 # # STEP 5: ETL the data from 3NF tables to Facts & Dimension Tables
