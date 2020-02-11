@@ -17,7 +17,7 @@ LOG_JSONPATH                 = config.get('S3','LOG_JSONPATH')
 SONG_DATA                 = config.get('S3','SONG_DATA')
 
 
-
+# EXAMPLE SONG DATA
 {
     "num_songs": 1, 
     "artist_id": "ARJIE2Y1187B994AB7", 
@@ -31,4 +31,24 @@ SONG_DATA                 = config.get('S3','SONG_DATA')
     "year": 0
 }
 
-
+# EXAMPLE LOG DATA
+{
+    "artist":"N.E.R.D. FEATURING MALICE",
+    "auth":"Logged In",
+    "firstName":"Jayden",
+    "gender":"M",
+    "itemInSession":0,
+    "lastName":"Fox",
+    "length":288.9922,
+    "level":"free",
+    "location":"New Orleans-Metairie, LA",
+    "method":"PUT",
+    "page":"NextSong",
+    "registration":1541033612796.0,
+    "sessionId":184,
+    "song":"Am I High (Feat. Malice)",
+    "status":200,
+    "ts":1541121934796,
+    "userAgent":"\"Mozilla\/5.0 (Windows NT 6.3; WOW64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/36.0.1985.143 Safari\/537.36\"",
+    "userId":"101"
+}
