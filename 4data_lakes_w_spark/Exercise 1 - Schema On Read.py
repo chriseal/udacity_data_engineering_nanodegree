@@ -295,4 +295,3 @@ dfCleanTyped.printSchema()
 from pyspark.sql.functions import to_timestamp
 dfDateCleaned = dfClean.withColumn("clean_ts", to_timestamp("date_time", "dd/MMM/yyyy:HH:mm:ss -SSS"))
 dfDateCleaned.printSchema()
-
