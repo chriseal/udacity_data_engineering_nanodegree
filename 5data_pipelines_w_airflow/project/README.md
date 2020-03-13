@@ -23,6 +23,9 @@ airflow webserver
 
 - if needed `pip install psycopg2-binary` or `sudo apt-get install build-dep python-psycopg2 && pip install psycopg2`
 
+- Add connections to Airflow
+  - Follow images available in the `./img` folder for AWS and Redshift credentials, respectively
+
 
 ## Running DAG
 
