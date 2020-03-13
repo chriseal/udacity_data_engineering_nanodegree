@@ -31,6 +31,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
     # s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv"
+    # start here
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
