@@ -19,7 +19,9 @@ default_args = {
     'start_date': datetime(2019, 1, 12),
     'end_date': datetime(2019, 3, 12),
     'retries': 0,
-    'max_active_runs': 1
+    'max_active_runs': 1,
+    'depends_on_past': False,
+    'catchup': False
 }
 DAG_NAME = 'sparkify_etl'
 UDACITY_S3_BUCKET = 'udacity-dend'

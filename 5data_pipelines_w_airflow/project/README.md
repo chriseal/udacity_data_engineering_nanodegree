@@ -29,18 +29,19 @@ airflow initdb
 
 ## Running DAG
 
+- In two separate terminals run these shared steps:
 ```
 cd ~/Projects/udacity_data_engineering_nanodegree/5data_pipelines_w_airflow/project
 export AIRFLOW_HOME=`pwd`
 conda activate udacity_p5
+```
+- And then, in Terminal 1:
+```
 airflow webserver
 ```
 
 - In a new terminal window 
 ```
-cd ~/Projects/udacity_data_engineering_nanodegree/5data_pipelines_w_airflow/project
-export AIRFLOW_HOME=`pwd`
-conda activate udacity_p5
 airflow scheduler
 ```
 
