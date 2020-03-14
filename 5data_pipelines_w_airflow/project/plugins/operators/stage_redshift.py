@@ -84,6 +84,6 @@ class StageToRedshiftOperator(BaseOperator):
             region=self.region,
             source_file_format=self.source_file_format,
             log_fpath=self.log_fpath,
-            extra=self.extra
+            extra=extra
         )
         redshift.run(formatted_sql)
