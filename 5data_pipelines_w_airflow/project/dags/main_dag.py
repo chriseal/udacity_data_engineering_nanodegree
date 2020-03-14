@@ -13,6 +13,7 @@ default_args = {
     'owner': 'awsuser',
     'start_date': datetime(2019, 1, 12),
     'end_date': datetime(2019, 3, 12),
+    'udacity_s3_bucket': 'udacity-dend', 
 }
 DAG_NAME = 'sparkify_etl'
 
@@ -30,8 +31,13 @@ start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
-    # s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv"
-    # start here
+    table="staging_events",
+    source_file_format='JSON',
+    s3_bucket=default_args['udacity_s3_bucket'],
+    s3_key="log_data",
+    aws_credentials_id="aws_credentials",
+    redshift_conn_id="redshift",
+    region="us-west-2",
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(

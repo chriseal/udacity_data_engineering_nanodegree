@@ -14,7 +14,7 @@ class StageToRedshiftOperator(BaseOperator):
         REGION '{region}'
         TIMEFORMAT as 'epochmillisecs'
         TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
-        FORMAT AS {source_file_format}
+        FORMAT AS {source_file_format} 'auto'
         {extra};
     """
 

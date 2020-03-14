@@ -18,7 +18,6 @@ cd ~/Projects/udacity_data_engineering_nanodegree/5data_pipelines_w_airflow/proj
 export AIRFLOW_HOME=`pwd`
 airflow version
 airflow initdb
-airflow webserver
 ```
 
 - if needed `pip install psycopg2-binary` or `sudo apt-get install build-dep python-psycopg2 && pip install psycopg2`
@@ -28,6 +27,13 @@ airflow webserver
 
 
 ## Running DAG
+
+```
+cd ~/Projects/udacity_data_engineering_nanodegree/5data_pipelines_w_airflow/project
+export AIRFLOW_HOME=`pwd`
+conda activate udacity_p5
+airflow webserver
+```
 
 - In a new terminal window 
 ```
