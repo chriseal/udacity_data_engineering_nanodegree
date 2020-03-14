@@ -9,7 +9,7 @@ class StageToRedshiftOperator(BaseOperator):
 
     copy_sql = """
         COPY {target_table}
-        FROM {s3_path}
+        FROM '{s3_path}'
         ACCESS_KEY_ID '{access_key}'
         SECRET_ACCESS_KEY '{secret_key}'
         REGION '{region}'
@@ -73,7 +73,6 @@ class StageToRedshiftOperator(BaseOperator):
         self.log.info("Clearing data from destination Redshift target_table")
         redshift.run("DROP TABLE IF EXISTS {}".format(self.target_table))
 
-        self.log.info("Copying data from S3 to Redshift")
         rendered_key = self.s3_key.format(**context)
         s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key) # can be called like: s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv"
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
@@ -86,4 +85,5 @@ class StageToRedshiftOperator(BaseOperator):
             log_fpath=self.log_fpath,
             extra=extra
         )
+        self.log.info("Copying data from S3 to Redshift\n{}".format(formatted_sql))
         redshift.run(formatted_sql)

@@ -16,8 +16,8 @@ from helpers import SqlQueries
 
 default_args = {
     'owner': 'chriseal',
-    'start_date': datetime(2019, 1, 12),
-    'end_date': datetime(2019, 3, 12),
+    'start_date': datetime(2020, 3, 14),
+    # 'end_date': datetime(2019, 3, 12),
     'retries': 0,
     'max_active_runs': 1,
     'depends_on_past': False,
@@ -37,6 +37,8 @@ dag = DAG(
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
+
+# start here creating staging tables
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
