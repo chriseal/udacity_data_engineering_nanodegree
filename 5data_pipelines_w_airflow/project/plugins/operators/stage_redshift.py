@@ -1,46 +1,48 @@
 from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.contrib.hooks.aws_hook import AwsHook
 
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
     template_fields = ("s3_key",) # fields that can be parameterized 
 
     copy_sql = """
-        COPY {table}
+        COPY {target_table}
         FROM {s3_path}
         ACCESS_KEY_ID '{access_key}'
         SECRET_ACCESS_KEY '{secret_key}'
         REGION '{region}'
-        TIMEFORMAT as 'epochmillisecs'
         TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
-        FORMAT AS {source_file_format} 'auto'
+        FORMAT AS {source_file_format} '{log_fpath}'
         {extra};
     """
 
     @apply_defaults
     def __init__(self,
-                 # Define your operators params (with defaults) here
-                 # Example:
-                 table="",
-                 source_file_format='JSON',
-                 delimiter=",", # csv-specific params
-                 ignore_headers=1, # csv-specific params
-                 s3_bucket="",
-                 s3_key="",
-                 aws_credentials_id="",
-                 redshift_conn_id="",
-                 region="",
-                 *args, **kwargs):
+            # Define your operators params (with defaults) here
+            # Example:
+            target_table="",
+            source_file_format='JSON',
+            delimiter=",", # csv-specific params
+            ignore_headers=1, # csv-specific params
+            log_fpath='auto',
+            s3_bucket="",
+            s3_key="",
+            aws_credentials_id="",
+            redshift_conn_id="",
+            region="",
+            *args, **kwargs):
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         # Map params here
         # Example:
         # self.conn_id = conn_id
 
-        self.table = table
+        self.target_table = target_table
         self.source_file_format = source_file_format.lower().strip()
         self.delimiter = delimiter
         self.ignore_headers = ignore_headers
+        self.log_fpath = log_fpath
 
         self.s3_bucket = s3_bucket
         self.s3_key = s3_key
@@ -57,8 +59,7 @@ class StageToRedshiftOperator(BaseOperator):
     def execute(self, context):
         """ """
 
-        self.log.info('StageToRedshiftOperator not implemented yet')
-
+        self.log.info('Establishing connection')
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
@@ -69,19 +70,20 @@ class StageToRedshiftOperator(BaseOperator):
                 self.delimiter, self.ignore_headers)
             ])
 
-        self.log.info("Clearing data from destination Redshift table")
-        redshift.run("DROP TABLE IF EXISTS {}".format(self.table))
+        self.log.info("Clearing data from destination Redshift target_table")
+        redshift.run("DROP TABLE IF EXISTS {}".format(self.target_table))
 
         self.log.info("Copying data from S3 to Redshift")
         rendered_key = self.s3_key.format(**context)
         s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key) # can be called like: s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv"
         formatted_sql = StageToRedshiftOperator.copy_sql.format(
-            table=self.table,
+            target_table=self.target_table,
             s3_path=s3_path,
             access_key=credentials.access_key,
             secret_key=credentials.secret_key,
             region=self.region,
             source_file_format=self.source_file_format,
+            log_fpath=self.log_fpath,
             extra=self.extra
         )
         redshift.run(formatted_sql)

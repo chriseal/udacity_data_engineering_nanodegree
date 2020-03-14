@@ -7,6 +7,7 @@
 conda create -n udacity_p5 python=3.7.3 anaconda
 conda activate udacity_p5
 pip install apache-airflow
+pip install boto3
 ```
 
 ## Setup airflow 
