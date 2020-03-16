@@ -2,17 +2,12 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-# from airflow.operators.udacity_plugin.stage_redshift import StageToRedshiftOperator
-# from airflow.operators.udacity_plugin.load_fact import LoadFactOperator
-# from airflow.operators.udacity_plugin.load_dimension import LoadDimensionOperator
-# from airflow.operators.udacity_plugin.data_quality import DataQualityOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator)
+                                LoadDimensionOperator, DataQualityOperator,
+                                RunSQLStatements)
 
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
 
 default_args = {
     'owner': 'chriseal',
@@ -38,7 +33,13 @@ dag = DAG(
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
 
-# start here creating staging tables
+initialize_tables = RunSQLStatements(
+    dag=dag,
+    task_id='Initialize_tables',
+    queries=SqlQueries.create_table_statements,
+    redshift_conn_id=REDSHIFT_CONN_ID
+)
+
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
@@ -117,7 +118,7 @@ run_quality_checks = DataQualityOperator(
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 
-start_operator >> [stage_events_to_redshift, stage_songs_to_redshift] >> \
+start_operator >> initialize_tables >> [stage_events_to_redshift, stage_songs_to_redshift] >> \
     load_songplays_table >> [load_user_dimension_table, load_song_dimension_table, 
         load_artist_dimension_table, load_time_dimension_table] >> \
     run_quality_checks >> end_operator

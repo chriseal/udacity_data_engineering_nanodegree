@@ -1,4 +1,105 @@
 class SqlQueries:
+    # CREATE TABLES
+    staging_events_table_create = ("""
+    CREATE TABLE IF NOT EXISTS staging_events(
+        artist          VARCHAR,
+        auth            VARCHAR,
+        firstName       VARCHAR,
+        gender          CHAR(1),
+        itemInSession   INTEGER,
+        lastName        VARCHAR,
+        length          FLOAT,
+        level           VARCHAR,
+        location        VARCHAR,
+        method          VARCHAR,
+        page            VARCHAR,
+        registration    FLOAT,
+        sessionId       INTEGER,
+        song            VARCHAR,
+        status          INTEGER,
+        ts              TIMESTAMP,
+        userAgent       VARCHAR,
+        userId          INTEGER
+    );
+    """)
+
+    staging_songs_table_create = ("""
+    CREATE TABLE IF NOT EXISTS staging_songs(
+        num_songs           INTEGER,
+        artist_id           VARCHAR,
+        artist_latitude     FLOAT,
+        artist_longitude    FLOAT,
+        artist_location     VARCHAR,
+        artist_name         VARCHAR,
+        song_id             VARCHAR,
+        title               VARCHAR,
+        duration            FLOAT,
+        year                INTEGER
+    );
+    """)
+
+    songplay_table_create = ("""
+    CREATE TABLE IF NOT EXISTS songplays(
+        songplay_id INTEGER     NOT NULL PRIMARY KEY IDENTITY(0,1), 
+        start_time  TIMESTAMP   NOT NULL SORTKEY DISTKEY, 
+        user_id     INTEGER     NOT NULL, 
+        level       VARCHAR, 
+        song_id     VARCHAR     NOT NULL, 
+        artist_id   VARCHAR     NOT NULL, 
+        session_id  INTEGER     NOT NULL, 
+        location    VARCHAR, 
+        user_agent  VARCHAR
+    );
+    ;
+    """)
+
+    user_table_create = ("""
+    CREATE TABLE IF NOT EXISTS users(
+        user_id     INTEGER     NOT NULL PRIMARY KEY,
+        first_name  VARCHAR     NOT NULL, 
+        last_name   VARCHAR     NOT NULL, 
+        gender      CHAR(1), 
+        level       VARCHAR
+    )
+    COMPOUND SORTKEY(last_name, first_name);
+    """)
+
+    song_table_create = ("""
+    CREATE TABLE IF NOT EXISTS songs(
+        song_id     VARCHAR     NOT NULL PRIMARY KEY, 
+        title       VARCHAR     NOT NULL, 
+        artist_id   VARCHAR     NOT NULL, 
+        year        INTEGER, 
+        duration    FLOAT4
+    )
+    COMPOUND SORTKEY(artist_id, song_id, year, title);
+    """)
+
+    artist_table_create = ("""
+    CREATE TABLE IF NOT EXISTS artists(
+        artist_id   VARCHAR     PRIMARY KEY NOT NULL, 
+        name        VARCHAR     SORTKEY,
+        location    VARCHAR, 
+        latitude    FLOAT8, 
+        longitude   FLOAT8
+    );
+    """)
+
+    time_table_create = ("""
+    CREATE TABLE IF NOT EXISTS time(
+        start_time  TIMESTAMP   PRIMARY KEY NOT NULL DISTKEY SORTKEY, 
+        hour        SMALLINT    NOT NULL,
+        day         SMALLINT    NOT NULL, 
+        week        SMALLINT    NOT NULL, 
+        month       SMALLINT    NOT NULL, 
+        year        SMALLINT    NOT NULL, 
+        weekday     SMALLINT    NOT NULL
+    );
+    """)
+
+    create_table_statements = [staging_events_table_create, staging_songs_table_create, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
+
+    ## INSERTIONS
     songplay_table_insert = ("""
         SELECT
                 md5(events.sessionid || events.start_time) songplay_id,
