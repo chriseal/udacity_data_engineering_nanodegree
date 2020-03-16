@@ -7,6 +7,12 @@ class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
     template_fields = ("s3_key",) # fields that can be parameterized 
 
+    confirm_exists_sql = """
+        select true where EXISTS (SELECT *
+        FROM INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_NAME = '{}');
+    """
+
     copy_sql = """
         COPY {target_table}
         FROM '{s3_path}'
@@ -70,8 +76,12 @@ class StageToRedshiftOperator(BaseOperator):
                 self.delimiter, self.ignore_headers)
             ])
 
-        self.log.info("Clearing data from destination Redshift target_table")
-        redshift.run("DROP TABLE IF EXISTS {}".format(self.target_table))
+        self.log.info("Confirming target table exists - {}".format(self.target_table))
+        res = redshift.run(StageToRedshiftOperator.confirm_exists_sql.format(self.target_table))
+        self.log.info("result:\t{}".format(res))
+
+        self.log.info("Clearing data from destination Redshift {}".format(self.target_table))
+        redshift.run("DELETE FROM {}".format(self.target_table))
 
         rendered_key = self.s3_key.format(**context)
         s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key) # can be called like: s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv"
@@ -85,5 +95,5 @@ class StageToRedshiftOperator(BaseOperator):
             log_fpath=self.log_fpath,
             extra=extra
         )
-        self.log.info("Copying data from S3 to Redshift\n{}".format(formatted_sql))
+        self.log.info("Copying data from S3 to Redshift")
         redshift.run(formatted_sql)

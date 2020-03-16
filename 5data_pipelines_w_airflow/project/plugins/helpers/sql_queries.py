@@ -1,7 +1,7 @@
 class SqlQueries:
     # CREATE TABLES
     staging_events_table_create = ("""
-    CREATE TABLE IF NOT EXISTS staging_events(
+    CREATE TABLE IF NOT EXISTS public.staging_events(
         artist          VARCHAR,
         auth            VARCHAR,
         firstName       VARCHAR,
@@ -24,7 +24,7 @@ class SqlQueries:
     """)
 
     staging_songs_table_create = ("""
-    CREATE TABLE IF NOT EXISTS staging_songs(
+    CREATE TABLE IF NOT EXISTS public.staging_songs(
         num_songs           INTEGER,
         artist_id           VARCHAR,
         artist_latitude     FLOAT,
@@ -39,7 +39,7 @@ class SqlQueries:
     """)
 
     songplay_table_create = ("""
-    CREATE TABLE IF NOT EXISTS songplays(
+    CREATE TABLE IF NOT EXISTS public.songplays(
         songplay_id INTEGER     NOT NULL PRIMARY KEY IDENTITY(0,1), 
         start_time  TIMESTAMP   NOT NULL SORTKEY DISTKEY, 
         user_id     INTEGER     NOT NULL, 
@@ -54,7 +54,7 @@ class SqlQueries:
     """)
 
     user_table_create = ("""
-    CREATE TABLE IF NOT EXISTS users(
+    CREATE TABLE IF NOT EXISTS public.users(
         user_id     INTEGER     NOT NULL PRIMARY KEY,
         first_name  VARCHAR     NOT NULL, 
         last_name   VARCHAR     NOT NULL, 
@@ -65,7 +65,7 @@ class SqlQueries:
     """)
 
     song_table_create = ("""
-    CREATE TABLE IF NOT EXISTS songs(
+    CREATE TABLE IF NOT EXISTS public.songs(
         song_id     VARCHAR     NOT NULL PRIMARY KEY, 
         title       VARCHAR     NOT NULL, 
         artist_id   VARCHAR     NOT NULL, 
@@ -76,7 +76,7 @@ class SqlQueries:
     """)
 
     artist_table_create = ("""
-    CREATE TABLE IF NOT EXISTS artists(
+    CREATE TABLE IF NOT EXISTS public.artists(
         artist_id   VARCHAR     PRIMARY KEY NOT NULL, 
         name        VARCHAR     SORTKEY,
         location    VARCHAR, 
@@ -86,7 +86,7 @@ class SqlQueries:
     """)
 
     time_table_create = ("""
-    CREATE TABLE IF NOT EXISTS time(
+    CREATE TABLE IF NOT EXISTS public."time"(
         start_time  TIMESTAMP   PRIMARY KEY NOT NULL DISTKEY SORTKEY, 
         hour        SMALLINT    NOT NULL,
         day         SMALLINT    NOT NULL, 
@@ -102,13 +102,13 @@ class SqlQueries:
     ## INSERTIONS
     songplay_table_insert = ("""
         SELECT
-                md5(events.sessionid || events.start_time) songplay_id,
+                md5(events.sessionId || events.start_time) songplay_id,
                 events.start_time, 
                 events.userid, 
                 events.level, 
                 songs.song_id, 
                 songs.artist_id, 
-                events.sessionid, 
+                events.sessionId, 
                 events.location, 
                 events.useragent
                 FROM (
