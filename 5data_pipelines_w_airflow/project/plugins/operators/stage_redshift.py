@@ -19,6 +19,7 @@ class StageToRedshiftOperator(BaseOperator):
         ACCESS_KEY_ID '{access_key}'
         SECRET_ACCESS_KEY '{secret_key}'
         REGION '{region}'
+        TIMEFORMAT as 'epochmillisecs'
         TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
         FORMAT AS {source_file_format} '{log_fpath}'
         {extra};

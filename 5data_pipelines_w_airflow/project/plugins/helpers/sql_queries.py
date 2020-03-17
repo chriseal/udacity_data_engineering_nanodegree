@@ -100,26 +100,42 @@ class SqlQueries:
     create_table_statements = [staging_events_table_create, staging_songs_table_create, songplay_table_create, user_table_create, song_table_create, artist_table_create, time_table_create]
 
     ## INSERTIONS
+    # songplay_table_insert = ("""
+    #     SELECT
+    #             md5(events.sessionId || events.start_time) songplay_id,
+    #             events.start_time, 
+    #             events.userid, 
+    #             events.level, 
+    #             songs.song_id, 
+    #             songs.artist_id, 
+    #             events.sessionId, 
+    #             events.location, 
+    #             events.useragent
+    #             FROM (
+    #                 SELECT TIMESTAMP 'epoch' + ts/1000 * interval '1 second' AS start_time, *
+    #                 FROM staging_events
+    #                 WHERE page='NextSong'
+    #             ) events
+    #         LEFT JOIN staging_songs songs
+    #         ON events.song = songs.title
+    #             AND events.artist = songs.artist_name
+    #             AND events.length = songs.duration
+    # """)
+
+
     songplay_table_insert = ("""
-        SELECT
-                md5(events.sessionId || events.start_time) songplay_id,
-                events.start_time, 
-                events.userid, 
-                events.level, 
-                songs.song_id, 
-                songs.artist_id, 
-                events.sessionId, 
-                events.location, 
-                events.useragent
-                FROM (
-                    SELECT TIMESTAMP 'epoch' + ts/1000 * interval '1 second' AS start_time, *
-                    FROM staging_events
-                    WHERE page='NextSong'
-                ) events
-            LEFT JOIN staging_songs songs
-            ON events.song = songs.title
-                AND events.artist = songs.artist_name
-                AND events.length = songs.duration
+        SELECT DISTINCT(e.ts) AS start_time,
+            e.userid AS user_id,
+            e.level,
+            s.song_id,
+            s.artist_id,
+            e.sessionid AS session_id,
+            e.location,
+            e.useragent AS user_agent
+        FROM staging_events e
+        JOIN staging_songs s
+            ON (e.song=s.title AND e.artist=s.artist_name)
+        WHERE e.page='NextSong';
     """)
 
     user_table_insert = ("""
