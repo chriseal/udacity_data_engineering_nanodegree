@@ -22,5 +22,5 @@ class RunSQLStatements(BaseOperator):
 
         self.log.info("Running {} SQL queries...".format(len(self.queries)))
         for i, query in enumerate(self.queries):
-            self.log.info("Query {}:\n{}".format(i+1, query))
+            self.log.info("Query {}".format(i+1))
             redshift.run(query)

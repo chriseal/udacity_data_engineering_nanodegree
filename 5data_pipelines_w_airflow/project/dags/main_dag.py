@@ -12,11 +12,12 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'chriseal',
     'start_date': datetime(2020, 3, 14),
-    # 'end_date': datetime(2019, 3, 12),
+    'end_date': datetime(2019, 3, 16),
     'retries': 0,
     'max_active_runs': 1,
     'depends_on_past': False,
-    'catchup': False
+    'catchup': False,
+    'retry_delay': timedelta(minutes=1)
 }
 DAG_NAME = 'sparkify_etl'
 UDACITY_S3_BUCKET = 'udacity-dend'
@@ -28,7 +29,7 @@ dag = DAG(
     DAG_NAME,
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *'
+    schedule_interval='0 * * * *' #@hourly
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -46,7 +47,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     dag=dag,
     target_table="staging_events",
     source_file_format='JSON',
-    log_fpath='s3://udacity-dend/log_json_path.json',
+    # log_fpath='s3://udacity-dend/log_json_path.json',
     s3_bucket=UDACITY_S3_BUCKET,
     s3_key="log_data",
     aws_credentials_id=AWS_CREDENTIALS_ID,
