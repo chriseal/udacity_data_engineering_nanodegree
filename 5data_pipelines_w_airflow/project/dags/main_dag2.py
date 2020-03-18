@@ -12,14 +12,14 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'chriseal',
     'start_date': datetime(2019, 12, 1, 0),
-    'end_date': datetime(2019, 12, 1, 0, 59),
+    'end_date': datetime(2019, 12, 1, 1),
     'retries': 0,
     'max_active_runs': 1,
     'depends_on_past': False,
     'catchup': False,
     'retry_delay': timedelta(seconds=5)
 }
-DAG_NAME = 'sparkify_etl'
+DAG_NAME = 'sparkify_etl2'
 UDACITY_S3_BUCKET = 'udacity-dend'
 REGION = "us-west-2"
 AWS_CREDENTIALS_ID = "aws_credentials"
@@ -30,7 +30,7 @@ dag = DAG(
     DAG_NAME,
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *' # @hourly
+    schedule_interval='0 * * * *' #@daily if debug else @hourly
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
