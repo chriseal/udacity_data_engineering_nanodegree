@@ -135,7 +135,8 @@ class SqlQueries:
         FROM staging_events e
         JOIN staging_songs s
             ON (e.song=s.title AND e.artist=s.artist_name)
-        WHERE e.page='NextSong';
+        WHERE e.page='NextSong'
+            AND e.user_id IS NOT NULL;
     """)
 
     user_table_insert = ("""

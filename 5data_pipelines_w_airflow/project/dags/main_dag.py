@@ -11,25 +11,26 @@ from helpers import SqlQueries
 
 default_args = {
     'owner': 'chriseal',
-    'start_date': datetime(2020, 3, 14),
-    'end_date': datetime(2019, 3, 16),
+    'start_date': datetime(2019, 12, 1),
+    'end_date': datetime(2019, 12, 2),
     'retries': 0,
     'max_active_runs': 1,
     'depends_on_past': False,
     'catchup': False,
-    'retry_delay': timedelta(minutes=1)
+    # 'retry_delay': timedelta(seconds=5)
 }
 DAG_NAME = 'sparkify_etl'
 UDACITY_S3_BUCKET = 'udacity-dend'
 REGION = "us-west-2"
 AWS_CREDENTIALS_ID = "aws_credentials"
 REDSHIFT_CONN_ID = "redshift"
+DEBUG = True
 
 dag = DAG(
     DAG_NAME,
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *' #@hourly
+    schedule_interval='0 0 * * *' if DEBUG else '0 * * * *' #@daily if debug else @hourly
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -49,7 +50,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     source_file_format='JSON',
     # log_fpath='s3://udacity-dend/log_json_path.json',
     s3_bucket=UDACITY_S3_BUCKET,
-    s3_key="log_data",
+    s3_key="log_data/2018/11" if DEBUG else "log_data",
     aws_credentials_id=AWS_CREDENTIALS_ID,
     redshift_conn_id=REDSHIFT_CONN_ID,
     region=REGION
@@ -61,7 +62,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     target_table="staging_songs",
     source_file_format='JSON',
     s3_bucket=UDACITY_S3_BUCKET,
-    s3_key="song_data",
+    s3_key="song_data/A/A" if DEBUG else "song_data",
     aws_credentials_id=AWS_CREDENTIALS_ID,
     redshift_conn_id=REDSHIFT_CONN_ID,
     region=REGION
