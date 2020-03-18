@@ -12,7 +12,7 @@ from helpers import SqlQueries
 default_args = {
     'owner': 'chriseal',
     'start_date': datetime(2019, 12, 1, 0),
-    'end_date': datetime(2019, 12, 1, 1),
+    'end_date': datetime(2019, 12, 1, 0, 59),
     'retries': 0,
     'max_active_runs': 1,
     'depends_on_past': False,
@@ -30,7 +30,7 @@ dag = DAG(
     DAG_NAME,
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *' #@daily if debug else @hourly
+    schedule_interval='0 * * * *' # @hourly
 )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
@@ -80,7 +80,7 @@ load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
     dag=dag,
     truncate_target_table=True,
-    target_table='user',
+    target_table='users',
     query=SqlQueries.user_table_insert,
     redshift_conn_id=REDSHIFT_CONN_ID,
 )
@@ -89,7 +89,7 @@ load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
     dag=dag,
     truncate_target_table=True,
-    target_table='song',
+    target_table='songs',
     query=SqlQueries.song_table_insert,
     redshift_conn_id=REDSHIFT_CONN_ID,
 )
@@ -98,7 +98,7 @@ load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
     dag=dag,
     truncate_target_table=True,
-    target_table='artist',
+    target_table='artists',
     query=SqlQueries.artist_table_insert,
     redshift_conn_id=REDSHIFT_CONN_ID,
 )

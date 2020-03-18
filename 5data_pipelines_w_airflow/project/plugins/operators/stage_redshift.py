@@ -8,7 +8,7 @@ class StageToRedshiftOperator(BaseOperator):
     template_fields = ("s3_key",) # fields that can be parameterized 
 
     confirm_exists_sql = """
-        select true where EXISTS (SELECT *
+        SELECT true WHERE EXISTS (SELECT *
         FROM INFORMATION_SCHEMA.TABLES
         WHERE TABLE_NAME = '{}');
     """
@@ -27,8 +27,6 @@ class StageToRedshiftOperator(BaseOperator):
 
     @apply_defaults
     def __init__(self,
-            # Define your operators params (with defaults) here
-            # Example:
             target_table="",
             source_file_format='JSON',
             delimiter=",", # csv-specific params
@@ -41,9 +39,6 @@ class StageToRedshiftOperator(BaseOperator):
             region="",
             *args, **kwargs):
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
-        # Map params here
-        # Example:
-        # self.conn_id = conn_id
 
         self.target_table = target_table
         self.source_file_format = source_file_format.lower().strip()
@@ -64,7 +59,9 @@ class StageToRedshiftOperator(BaseOperator):
 
 
     def execute(self, context):
-        """ """
+        """
+        Copy one or more 
+        """
 
         self.log.info('Establishing connection to: {}'.format(self.target_table.upper()))
         aws_hook = AwsHook(self.aws_credentials_id)
@@ -78,7 +75,7 @@ class StageToRedshiftOperator(BaseOperator):
             ])
 
         self.log.info("Confirming target table exists - {}".format(self.target_table))
-        res = redshift.run(StageToRedshiftOperator.confirm_exists_sql.format(self.target_table))
+        res = redshift.get_records(StageToRedshiftOperator.confirm_exists_sql.format(self.target_table))
         self.log.info("result:\t{}".format(res))
 
         self.log.info("Clearing data from destination Redshift {}".format(self.target_table))

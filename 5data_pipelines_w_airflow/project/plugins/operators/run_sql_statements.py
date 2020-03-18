@@ -17,6 +17,11 @@ class RunSQLStatements(BaseOperator):
         self.redshift_conn_id = redshift_conn_id
 
     def execute(self, context):
+        """ Executed a list of SQL queries
+
+        Can be helpful for tasks such as creating a bunch of empty tables
+        """
+
         self.log.info('Establishing a connection')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 

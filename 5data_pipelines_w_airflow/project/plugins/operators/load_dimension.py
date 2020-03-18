@@ -3,14 +3,11 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 class LoadDimensionOperator(BaseOperator):
-
     ui_color = '#80BD9E'
-    truncate_sql = """
-        TRUNCATE TABLE {target_table}
-    """
+    truncate_sql = "TRUNCATE TABLE {};"
     dim_sql = """
-        INSERT INTO {target_table}
-        {query}
+        INSERT INTO {}
+        {};
     """
 
     @apply_defaults
@@ -29,18 +26,16 @@ class LoadDimensionOperator(BaseOperator):
 
 
     def execute(self, context):
+        """ Insert records into a table with the option to truncate it beforehand """
+
         self.log.info('Establishing a connection')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         if self.truncate_target_table:
             self.log.info('Truncating {}'.format(self.target_table))
-            redshift.run(LoadDimensionOperator.truncate_sql.format(
-                target_table=self.target_table
-            ))
+            redshift.run(LoadDimensionOperator.truncate_sql.format(self.target_table))
 
-        self.log.info("Loading {}\n{}".format(self.target_table, self.query))
-        formatted_sql = LoadDimensionOperator.dim_sql.format(
-            target_table=self.target_table,
-            query=self.query
+        self.log.info("Loading {}".format(self.target_table))
+        redshift.run(
+            LoadDimensionOperator.dim_sql.format(self.target_table, self.query)
         )
-        redshift.run(formatted_sql)

@@ -143,6 +143,7 @@ class SqlQueries:
         SELECT distinct userid, firstname, lastname, gender, level
         FROM staging_events
         WHERE page='NextSong'
+            AND userid IS NOT NULL;
     """)
 
     song_table_insert = ("""
