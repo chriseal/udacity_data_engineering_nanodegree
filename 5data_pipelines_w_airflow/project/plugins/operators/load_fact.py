@@ -6,8 +6,6 @@ from airflow.utils.decorators import apply_defaults
 class LoadFactOperator(BaseOperator):
     ui_color = '#F98866'
 
-    # http://www.geekinterview.com/question_details/82655 
-    # truncate is faster than drop because it keeps table structure
     fact_sql = """
         INSERT INTO {target_table}
         {query}
@@ -28,6 +26,8 @@ class LoadFactOperator(BaseOperator):
 
 
     def execute(self, context):
+        """ Append records into a fact table """
+
         self.log.info('Establishing a connection')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 

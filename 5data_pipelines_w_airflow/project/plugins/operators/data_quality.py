@@ -43,4 +43,4 @@ class DataQualityOperator(BaseOperator):
                 else:
                     raise ValueError(txt)
 
-            logging.info("{} Data quality on table {} check passed with {} records".format(i, table, num_records))
+            self.log.info("{} Data quality on table {} check passed with {} records".format(i, table, num_records))

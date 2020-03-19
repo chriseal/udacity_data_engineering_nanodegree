@@ -60,7 +60,7 @@ class StageToRedshiftOperator(BaseOperator):
 
     def execute(self, context):
         """
-        Copy one or more 
+        Copy one or more raw json or csv files from AWS S3 to a Redshift staging table
         """
 
         self.log.info('Establishing connection to: {}'.format(self.target_table.upper()))
