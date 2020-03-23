@@ -6,6 +6,15 @@ from airflow.contrib.hooks.aws_hook import AwsHook
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
     template_fields = ("s3_key",) # fields that can be parameterized 
+    """
+    Nice work the stage operator. I suggest adding a template field that would allow to load timestamped files from S3 based on the execution time and run backfills.
+
+    template_fields = ("s3_key",)
+    Actually it is similar with your comment below
+
+    s3_path = "s3://{}/{}".format(self.s3_bucket, rendered_key) # can be called like: s3_key="divvy/partitioned/{execution_date.year}/{execution_date.month}/divvy_trips.csv
+    """
+
 
     confirm_exists_sql = """
         SELECT true WHERE EXISTS (SELECT *
